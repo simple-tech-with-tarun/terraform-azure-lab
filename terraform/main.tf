@@ -97,7 +97,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
   admin_username      = var.admin_username
 
   network_interface_ids = [azurerm_network_interface.vm.id]
-
+  identity {
+    type = "SystemAssigned"
+  }
   admin_ssh_key {
     username   = var.admin_username
     public_key = var.ssh_public_key
@@ -116,17 +118,22 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 }
 
-resource "azurerm_network_security_rule" "ssh"{
-name = "allow-ssh"
-priority = 100
-direction = "Inbound"
-access = "Allow"
-protocol = "Tcp"
-source_port_range = "*"
-destination_port_range = "22"
-source_address_prefix = var.admin_source_cidr
-destination_address_prefix = "*"
+resource "azurerm_network_security_rule" "ssh" {
+  name                       = "allow-ssh"
+  priority                   = 100
+  direction                  = "Inbound"
+  access                     = "Allow"
+  protocol                   = "Tcp"
+  source_port_range          = "*"
+  destination_port_range     = "22"
+  source_address_prefix      = var.admin_source_cidr
+  destination_address_prefix = "*"
 
-resource_group_name = azurerm_resource_group.lab.name
-network_security_group_name = azurerm_network_security_group.lab.name
+  resource_group_name         = azurerm_resource_group.lab.name
+  network_security_group_name = azurerm_network_security_group.lab.name
+}
+resource "azurerm_role_assignment" "vm_storage_contributor" {
+  scope                = azurerm_storage_account.lab.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_linux_virtual_machine.vm.identity[0].principal_id
 }

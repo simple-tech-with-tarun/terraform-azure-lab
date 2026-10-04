@@ -24,5 +24,15 @@ output "public_ip" {
 }
 output "private_ip" {
   description = "Private IP allocated to the Linux VM"
-  value       = azurerm_network_interface.vm.private_ip_address 
+  value       = azurerm_network_interface.vm.private_ip_address
+}
+
+output "vm_principal_id" {
+  description = "Principal ID of the VM's system-assigned managed identity."
+  value       = azurerm_linux_virtual_machine.vm.identity[0].principal_id
+}
+
+output "vm_storage_contributor" {
+  description = "Details of the role assignment of the VM"
+  value       = azurerm_role_assignment.vm_storage_contributor.role_definition_name
 }

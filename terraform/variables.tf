@@ -17,3 +17,28 @@ variable "storage_container_name" {
   description = "Name of the Blob Storage container."
   type        = string
 }
+
+variable "vnet_name" {
+  description = "Name of the Azure Virtual Network."
+  type        = string
+}
+
+variable "vnet_address_space" {
+  description = "Address space for the Azure Virtual Network."
+  type        = list(string)
+}
+
+variable "subnet_name" {
+  description = "Name of the subnet."
+  type        = string
+}
+
+variable "subnet_address_prefixes" {
+  description = "Address prefixes for the subnet."
+  type        = list(string)
+}
+
+variable "nsg_name" {
+  description = "Name of the Network Security Group."
+  type        = string
+}

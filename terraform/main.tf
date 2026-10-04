@@ -42,3 +42,27 @@ resource "azurerm_storage_container" "lab" {
   storage_account_id    = azurerm_storage_account.lab.id
   container_access_type = "private"
 }
+
+resource "azurerm_virtual_network" "lab" {
+  name                = var.vnet_name
+  location            = azurerm_resource_group.lab.location
+  resource_group_name = azurerm_resource_group.lab.name
+  address_space       = var.vnet_address_space
+}
+
+resource "azurerm_subnet" "app" {
+  name                 = var.subnet_name
+  resource_group_name  = azurerm_resource_group.lab.name
+  virtual_network_name = azurerm_virtual_network.lab.name
+  address_prefixes     = var.subnet_address_prefixes
+}
+
+resource "azurerm_network_security_group" "lab" {
+  name                = var.nsg_name
+  location            = azurerm_resource_group.lab.location
+  resource_group_name = azurerm_resource_group.lab.name
+}
+resource "azurerm_subnet_network_security_group_association" "app" {
+  subnet_id                 = azurerm_subnet.app.id
+  network_security_group_id = azurerm_network_security_group.lab.id
+}

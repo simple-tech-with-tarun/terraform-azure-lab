@@ -42,3 +42,27 @@ variable "nsg_name" {
   description = "Name of the Network Security Group."
   type        = string
 }
+variable "vm_name" {
+  description = "Name of the Linux virtual machine."
+  type        = string
+}
+
+variable "vm_size" {
+  description = "Azure VM size."
+  type        = string
+}
+
+variable "admin_username" {
+  description = "Administrator username for the Linux VM."
+  type        = string
+}
+
+variable "ssh_public_key" {
+  description = "SSH public key used to access the Linux VM."
+  type        = string
+}
+
+variable "admin_source_cidr" {
+  description = "CIDR range allowed to access the VM over SSH."
+  type        = string
+}

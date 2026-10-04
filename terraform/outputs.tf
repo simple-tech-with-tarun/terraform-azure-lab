@@ -17,3 +17,12 @@ output "storage_container_name" {
   description = "Name of the Azure storage container"
   value       = azurerm_storage_container.lab.name
 }
+
+output "public_ip" {
+  description = "Pubic IP allocated to the Linux VM"
+  value       = azurerm_public_ip.vm.ip_address
+}
+output "private_ip" {
+  description = "Private IP allocated to the Linux VM"
+  value       = azurerm_network_interface.vm.private_ip_address 
+}

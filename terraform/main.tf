@@ -40,3 +40,11 @@ resource "azurerm_storage_container" "foreach_demo" {
   storage_account_id    = azurerm_storage_account.dependency_demo.id
   container_access_type = "private"
 }
+
+resource "azurerm_storage_container" "count_demo" {
+  count = length(var.count_container_names)
+
+  name                  = var.count_container_names[count.index]
+  storage_account_id    = azurerm_storage_account.dependency_demo.id
+  container_access_type = "private"
+}

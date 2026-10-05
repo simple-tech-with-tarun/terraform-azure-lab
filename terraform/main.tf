@@ -33,16 +33,10 @@ resource "azurerm_storage_account" "dependency_demo" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
+resource "azurerm_storage_container" "foreach_demo" {
+  for_each = var.container_names
 
-resource "azurerm_storage_container" "dependency_demo" {
-  name                  = "dependency-demo"
+  name                  = each.value
   storage_account_id    = azurerm_storage_account.dependency_demo.id
   container_access_type = "private"
-}
-resource "terraform_data" "explicit_dependency_demo" {
-  input = "storage-account-ready"
-
-  depends_on = [
-    azurerm_storage_account.dependency_demo
-  ]
 }

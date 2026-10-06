@@ -33,10 +33,6 @@ resource "azurerm_storage_account" "dependency_demo" {
   location                 = azurerm_resource_group.dependency_demo.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 resource "azurerm_storage_container" "deletable" {
   for_each = var.deletable_containers
@@ -44,49 +40,5 @@ resource "azurerm_storage_container" "deletable" {
   name                  = each.value
   storage_account_id    = azurerm_storage_account.dependency_demo.id
   container_access_type = "private"
-
-  lifecycle {
-    create_before_destroy = true
-    ignore_changes = [
-      metadata["Object"],
-      metadata["case"]
-    ]
-
-
-  }
 }
 
-resource "azurerm_resource_group" "demo2" {
-  name     = "delta_t"
-  location = "east us"
-  tags = {
-    Owner       = "Tarun"
-    AutoDelete  = "Yes"
-    Environment = var.environment
-
-  }
-
-  lifecycle {
-    ignore_changes = [
-      tags["CreatedOn"]
-    ]
-
-    precondition {
-      condition     = azurerm_resource_group.dependency_demo.tags.AutoDelete == "Yes"
-      error_message = "AutoDelete tag must be set to Yes."
-    }
-
-    postcondition {
-      condition     = self.tags["Environment"] == "lab"
-      error_message = "Environment must be lab"
-    }
-  }
-
-}
-resource "azurerm_storage_account" "repalcement_demo" {
-  name                     = "tfazreplacement"
-  resource_group_name      = azurerm_resource_group.demo2.name
-  location                 = azurerm_resource_group.demo2.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}

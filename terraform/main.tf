@@ -13,7 +13,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "dependency_demo" {
-  name     = "tf-azure-dependency-demo-rg"
+  name     = "tf-azure-dependency-demo-rg2"
   location = "eastus"
   tags = {
     Owner      = "Tarun"
@@ -33,6 +33,10 @@ resource "azurerm_storage_account" "dependency_demo" {
   location                 = azurerm_resource_group.dependency_demo.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 resource "azurerm_storage_container" "deletable" {
   for_each = var.deletable_containers

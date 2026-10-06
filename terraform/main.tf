@@ -18,6 +18,7 @@ resource "azurerm_resource_group" "dependency_demo" {
   tags = {
     Owner      = "Tarun"
     AutoDelete = "Yes"
+
   }
   lifecycle {
     ignore_changes = [
@@ -33,18 +34,55 @@ resource "azurerm_storage_account" "dependency_demo" {
   account_tier             = "Standard"
   account_replication_type = "LRS"
 }
-resource "azurerm_storage_container" "foreach_demo" {
-  for_each = var.container_names
+resource "azurerm_storage_container" "deletable" {
+  for_each = var.deletable_containers
 
   name                  = each.value
   storage_account_id    = azurerm_storage_account.dependency_demo.id
   container_access_type = "private"
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      metadata["Object"],
+      metadata["case"]
+    ]
+
+
+  }
 }
 
-resource "azurerm_storage_container" "count_demo" {
-  count = length(var.count_container_names)
+resource "azurerm_resource_group" "demo2" {
+  name     = "delta_t"
+  location = "east us"
+  tags = {
+    Owner       = "Tarun"
+    AutoDelete  = "Yes"
+    Environment = var.environment
 
-  name                  = var.count_container_names[count.index]
-  storage_account_id    = azurerm_storage_account.dependency_demo.id
-  container_access_type = "private"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["CreatedOn"]
+    ]
+
+    precondition {
+      condition     = azurerm_resource_group.dependency_demo.tags.AutoDelete == "Yes"
+      error_message = "AutoDelete tag must be set to Yes."
+    }
+
+    postcondition {
+      condition     = self.tags["Environment"] == "lab"
+      error_message = "Environment must be lab"
+    }
+  }
+
+}
+resource "azurerm_storage_account" "repalcement_demo" {
+  name                     = "tfazreplacement"
+  resource_group_name      = azurerm_resource_group.demo2.name
+  location                 = azurerm_resource_group.demo2.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 }

@@ -1,7 +1,8 @@
-variable "container_names" {
+variable "deletable_containers" {
   type = map(string)
 }
 
-variable "count_container_names" {
-  type = list(string)
+variable "environment" {
+  type    = string
+  default = "lab"
 }

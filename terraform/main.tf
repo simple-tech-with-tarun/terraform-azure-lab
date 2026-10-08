@@ -1,14 +1,14 @@
 resource "azurerm_resource_group" "lab" {
-  name     = local.resource_names.resource_group
+  name     = local.group_name
   location = local.selected_config.location
   tags     = local.common_tags
 }
 
 resource "azurerm_storage_account" "lab" {
   for_each                 = local.storage_config
-  name                     = local.resource_names.storage[each.key]
+  name                     = each.value.name
   location                 = local.selected_config.location
-  resource_group_name      = local.resource_names.resource_group
+  resource_group_name      = local.group_name
   account_tier             = each.value.tier
   account_replication_type = each.value.replication
 }

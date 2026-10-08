@@ -3,18 +3,12 @@ locals {
 
   name_prefix = "${var.project_name}${var.environment_name}"
 
-  resource_names = {
-    resource_group = "${local.name_prefix}-rg"
-
-    storage = {
-      for storage_name, _ in local.selected_config.storage :
-      storage_name => "${local.name_prefix}${storage_name}"
-    }
-  }
+  group_name = "${local.name_prefix}-rg"
 
   storage_config = {
     for storage_name, storage_config in local.selected_config.storage :
     storage_name => {
+      name        = "${local.name_prefix}${storage_name}"
       replication = storage_config.replication
       tier        = storage_config.tier
     }

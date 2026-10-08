@@ -5,6 +5,7 @@ resource "azurerm_resource_group" "lab" {
 }
 
 resource "azurerm_storage_account" "lab" {
+  depends_on               = [azurerm_resource_group.lab]
   for_each                 = local.storage_config
   name                     = each.value.name
   location                 = local.selected_config.location

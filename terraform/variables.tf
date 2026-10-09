@@ -3,34 +3,23 @@ variable "project_name" {
   type        = string
 }
 
-variable "owner" {
-  description = "Owner of the resources"
-  type        = string
-}
-
-variable "environment_name" {
-  description = "Name of the environment to deploy"
+variable "environment" {
+  description = "Deployment environment"
   type        = string
 
   validation {
-    condition = contains(
-      ["dev", "test", "staging", "prod"],
-      var.environment_name
-    )
-
-    error_message = "environment_name must be one of: dev, test, staging, or prod."
+    condition     = contains(["dev", "test", "prod"], var.environment)
+    error_message = "Environment must be dev, test, or prod."
   }
 }
 
-variable "config" {
-  description = "Environment-specific configuration"
+variable "location" {
+  description = "Azure region for the resources"
+  type        = string
+  default     = "eastus"
+}
 
-  type = map(object({
-    location = string
-
-    storage = map(object({
-      replication = string
-      tier        = string
-    }))
-  }))
+variable "owner" {
+  description = "Owner of the resources"
+  type        = string
 }

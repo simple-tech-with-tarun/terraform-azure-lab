@@ -9,4 +9,10 @@ resource "azurerm_resource_group" "rg" {
       owner = each.value.owner
     }
   )
+  lifecycle {
+    ignore_changes = [
+      tags["CreatedOn"],
+      tags["AutoDelete"]
+    ]
+  }
 }

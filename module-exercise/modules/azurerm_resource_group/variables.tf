@@ -1,4 +1,3 @@
-
 variable "rg_m" {
   type = map(object({
     name       = string

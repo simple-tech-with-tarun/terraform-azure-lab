@@ -58,3 +58,45 @@ variable "subnet" {
     error_message = "Each subnet must have at least one address space and reference an existing resource group key."
   }
 }
+
+variable "nsg" {
+  type = map(object({
+    name               = string
+    location           = string
+    resource_group_key = string
+
+    security_rules = map(object({
+      name                       = string
+      priority                   = number
+      direction                  = string
+      access                     = string
+      protocol                   = string
+      source_port_range          = string
+      destination_port_range     = string
+      source_address_prefix      = string
+      destination_address_prefix = string
+      description                = optional(string)
+    }))
+    owner = string
+    tags  = optional(map(string), {})
+  }))
+
+  validation {
+    condition = alltrue([
+      for nsg in values(var.nsg) :
+      contains(keys(var.rg), nsg.resource_group_key)
+    ])
+    error_message = "Each NSG must reference an existing resource group key."
+  }
+}
+
+
+variable "association" {
+  description = "Map of subnet and network security group IDs to associate"
+  type = map(object({
+    subnet_key                 = string
+    network_security_group_key = string
+    virtual_network_key        = string
+    resource_group_key         = string
+  }))
+}

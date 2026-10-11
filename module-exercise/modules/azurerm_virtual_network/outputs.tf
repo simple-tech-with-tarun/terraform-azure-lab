@@ -5,6 +5,14 @@ output "virtual_network_ids" {
     key => vnet.id
   }
 }
+
+output "virtual_network_names" {
+  description = "Names of the created virtual networks."
+  value = {
+    for key, vnet in azurerm_virtual_network.vnet :
+    key => vnet.name
+  }
+}
 output "virtual_network_address_spaces" {
   description = "Address spaces of the created virtual networks."
   value = {

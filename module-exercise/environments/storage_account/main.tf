@@ -32,7 +32,8 @@ module "azurerm_subnet" {
       virtual_network_name = module.azurerm_virtual_network.virtual_network_names[value.virtual_network_key]
       address_prefixes     = value.address_prefixes
 
-      service_endpoints                 = value.service_endpoints
+      service_endpoints = value.service_endpoints
+
       private_endpoint_network_policies = value.private_endpoint_network_policies
       default_outbound_access_enabled   = value.default_outbound_access_enabled
 
@@ -56,7 +57,7 @@ module "azure_storage_account" {
       account_tier             = value.account_tier
       account_replication_type = value.account_replication_type
 
-      public_network_access_enabled = value.public_network_access_enabled
+      public_network_access = value.public_network_access
       network_rules = {
         default_action = value.network_rules.default_action
         ip_rules       = value.network_rules.ip_rules

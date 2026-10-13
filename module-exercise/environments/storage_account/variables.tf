@@ -38,7 +38,10 @@ variable "subnet" {
     name                = string
     virtual_network_key = string
     address_prefixes    = list(string)
-    service_endpoints   = optional(list(string), [])
+    service_endpoints = optional(list(object({
+      service            = string
+      network_identifier = optional(string)
+    })), [])
 
     private_endpoint_network_policies = optional(string, "Disabled")
     default_outbound_access_enabled   = optional(bool, false)
@@ -68,7 +71,7 @@ variable "sa" {
     subnet_key               = string
 
     # Network access
-    public_network_access_enabled = optional(bool, false)
+    public_network_access = optional(string, "Disabled")
 
     network_rules = optional(object({
       default_action = optional(string, "Deny")

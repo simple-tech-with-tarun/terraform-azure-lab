@@ -7,7 +7,7 @@ resource "azurerm_storage_account" "sa" {
   account_tier             = each.value.account_tier
   account_replication_type = each.value.account_replication_type
 
-  public_network_access_enabled = each.value.public_network_access_enabled
+  public_network_access = each.value.public_network_access
 
 
   network_rules {

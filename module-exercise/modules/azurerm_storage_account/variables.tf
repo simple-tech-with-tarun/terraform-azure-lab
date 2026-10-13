@@ -7,7 +7,7 @@ variable "sa_m" {
     account_replication_type = string
 
     # Network access
-    public_network_access_enabled = optional(bool, false)
+    public_network_access = optional(string, "Disabled")
 
     network_rules = optional(object({
       default_action = optional(string, "Deny")
@@ -89,5 +89,12 @@ variable "sa_m" {
       ])
     ])
     error_message = "Network rules must use Allow or Deny, non-empty subnet IDs, and valid IPv4 addresses or CIDR ranges."
+  }
+  validation {
+    condition = alltrue([
+      for key in values(var.sa_m):
+      contains(["Enabled","Disabled"], key.public_network_access)
+    ])
+    error_message = "public_network_access must be either Enabled or Disabled"
   }
 }

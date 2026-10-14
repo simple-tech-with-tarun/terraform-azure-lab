@@ -92,8 +92,8 @@ variable "sa_m" {
   }
   validation {
     condition = alltrue([
-      for key in values(var.sa_m):
-      contains(["Enabled","Disabled"], key.public_network_access)
+      for key in values(var.sa_m) :
+      contains(["Enabled", "Disabled"], key.public_network_access)
     ])
     error_message = "public_network_access must be either Enabled or Disabled"
   }

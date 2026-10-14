@@ -14,8 +14,8 @@ output "subnet_address_prefixes" {
   }
 }
 output "subnet_names" {
-    value = {
-        for key, value in azurerm_subnet.subnet:
-        key => value.name
-    }
+  value = {
+    for key, value in azurerm_subnet.subnet :
+    key => value.name
+  }
 }

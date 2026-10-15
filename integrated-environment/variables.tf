@@ -95,3 +95,29 @@ variable "association" {
     resource_group_name         = string
   }))
 }
+
+variable "vnet_peer" {
+  type = map(object({
+    name                   = string
+    resource_group_name_1  = string
+    resource_group_name_2  = string
+    virtual_network_name_1 = string
+    virtual_network_name_2 = string
+
+    allow_virtual_network_access = optional(bool, true)
+    allow_forwarded_traffic      = optional(bool, false)
+    allow_gateway_transit        = optional(bool, false)
+    use_remote_gateways          = optional(bool, false)
+  }))
+
+  validation {
+    condition = alltrue([
+      for peer in values(var.vnet_peer) :
+      contains(local.rg_names, peer.resource_group_name_1) &&
+      contains(local.rg_names, peer.resource_group_name_2) &&
+      contains(local.vnet_names, peer.virtual_network_name_1) &&
+      contains(local.vnet_names, peer.virtual_network_name_2)
+    ])
+    error_message = "Each peering must reference resource groups and virtual networks defined in the input configuration."
+  }
+}

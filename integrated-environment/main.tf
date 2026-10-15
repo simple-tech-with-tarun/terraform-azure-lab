@@ -77,3 +77,9 @@ module "azurerm_subnet_nsg_association" {
   source        = "../module-exercise/modules/azurerm_subnet_nsg_association"
   association_m = var.association
 }
+
+module "azurerm_virtual_network_peering" {
+  depends_on  = [module.azurerm_virtual_network]
+  source      = "../module-exercise/modules/azurerm_virtual_network_peering"
+  vnet_peer_m = var.vnet_peer
+}

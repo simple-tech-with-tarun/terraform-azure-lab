@@ -83,3 +83,14 @@ module "azurerm_virtual_network_peering" {
   source      = "../module-exercise/modules/azurerm_virtual_network_peering"
   vnet_peer_m = var.vnet_peer
 }
+
+
+module "azurerm_linux_virtual_machine" {
+  depends_on = [
+    module.azurerm_subnet,
+    module.azurerm_network_security_group
+
+  ]
+  source = "../module-exercise/modules/azurerm_linux_virtual_machine"
+  vm_m   = var.vm
+}

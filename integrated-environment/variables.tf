@@ -214,3 +214,29 @@ variable "vm" {
     error_message = "Static IP configurations must specify a non-empty private IP address. Dynamic IP configurations must not specify a private IP address."
   }
 }
+
+variable "public_ip" {
+  type = map(object({
+
+    name                = string
+    resource_group_name = string
+    location            = string
+
+
+    allocation_method       = optional(string, "Static")
+    sku                     = optional(string, "Standard")
+    sku_tier                = optional(string, "Regional")
+    ip_version              = optional(string, "IPv4")
+    zones                   = optional(list(string))
+    domain_name_label       = optional(string)
+    domain_name_label_scope = optional(string)
+    reverse_fqdn            = optional(string)
+    idle_timeout_in_minutes = optional(number, 4)
+    public_ip_prefix_id     = optional(string)
+    ip_tags                 = optional(map(string), {})
+    ddos_protection_mode    = optional(string, "VirtualNetworkInherited")
+    ddos_protection_plan_id = optional(string)
+    edge_zone               = optional(string)
+
+  }))
+}

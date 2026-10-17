@@ -1,3 +1,15 @@
+> ⚠️ **COPYRIGHT NOTICE**
+>
+> © 2026 Simple Tech With Tarun. All rights reserved, except where otherwise stated.
+>
+> This repository contains original technical documentation, Terraform configurations, examples, and other materials that may be protected by copyright. Public availability does not automatically grant permission to reproduce, republish, redistribute, or commercially exploit these materials.
+>
+> Before reusing original materials, please review the [Copyright Policy](https://github.com/simple-tech-with-tarun/simple-tech-with-tarun/blob/main/COPYRIGHT.md).
+>
+> Third-party materials remain subject to their respective licenses and ownership rights.
+
+---
+
 # Terraform Azure Lab
 
 A hands-on collection of Terraform projects for provisioning, configuring, and managing Microsoft Azure infrastructure using Infrastructure as Code (IaC).

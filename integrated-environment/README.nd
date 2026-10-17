@@ -1,0 +1,216 @@
+# Terraform Azure Integrated Environment
+
+## Overview
+
+This environment brings together reusable Terraform modules to define an Azure networking environment and a Linux virtual machine within a single Azure subscription.
+
+The purpose of this environment is to demonstrate how independently developed Terraform modules can be composed into a larger configuration while maintaining consistent naming, tagging, and resource dependencies.
+
+The configuration currently uses Terraform's **local backend**. Remote state management is not configured.
+
+## Architecture
+
+The environment is designed around two Azure resource groups:
+
+- **dev1** — located in `centralindia`; hosts the first virtual network, its subnets, networking security resources, a Linux virtual machine, and a standalone Public IP.
+- **dev2** — located in `eastus`; hosts the second virtual network, its subnets, and networking security resources.
+
+The virtual networks are configured for VNet peering to enable private network connectivity between the environments, subject to the configured routing and security rules.
+
+### Network design
+
+| Environment | Region | Virtual network address space | Workload subnet | Management subnet |
+|---|---|---|---|---|
+| `dev1` | `centralindia` | `10.0.0.0/16` | `10.0.1.0/24` | `10.0.2.0/24` |
+| `dev2` | `eastus` | `10.1.0.0/16` | `10.1.1.0/24` | `10.1.2.0/24` |
+
+The configuration includes bidirectional VNet peering, Network Security Groups (NSGs), and subnet–NSG associations.
+
+### Resources
+
+- Azure Resource Groups
+- Azure Virtual Networks
+- Azure Subnets
+- Network Security Groups (NSGs)
+- Subnet–NSG associations
+- Virtual Network Peerings
+- Linux Virtual Machine
+- Network Interface
+- Azure Public IP
+
+The Public IP is a standalone resource. It is not currently attached to the Linux VM or an Application Gateway.
+
+## Terraform Modules
+
+The root configuration composes reusable modules from `../module-exercise/modules/`.
+
+| Module | Responsibility |
+|---|---|
+| `azurerm_resource_group` | Creates Azure resource groups |
+| `azurerm_virtual_network` | Creates virtual networks |
+| `azurerm_subnet` | Creates subnets |
+| `azurerm_network_security_group` | Creates NSGs and configures security rules |
+| `azurerm_subnet_nsg_association` | Associates NSGs with subnets |
+| `azurerm_virtual_network_peering` | Configures peering between virtual networks |
+| `azurerm_linux_virtual_machine` | Creates the Linux VM and its network interface |
+| `azurerm_public_ip` | Creates an Azure Public IP resource |
+
+The environment passes common tags and owner information into the relevant modules to maintain consistent resource metadata.
+
+The modules are maintained separately and referenced through the relative path shown above. Ensure that the shared module directory is available before initializing Terraform.
+
+## Prerequisites
+
+Before using this environment, ensure that you have:
+
+- An Azure subscription and permission to create the required resources.
+- Azure CLI installed and authenticated.
+- Terraform installed.
+- The AzureRM Terraform provider configured.
+- Access to the shared module directory referenced by the root configuration.
+- An SSH key pair for Linux VM authentication.
+- Appropriate Azure permissions for the planned resource operations.
+
+## Terraform State Management
+
+This environment currently uses Terraform's default **local backend**.
+
+Terraform state is stored locally in the working directory, typically in `terraform.tfstate`. Remote state management is not configured.
+
+Keep the following practices in mind:
+
+- Run Terraform commands from the `integrated-environment` directory.
+- Do not commit Terraform state files, which may contain sensitive infrastructure information.
+- Back up state before significant recovery or state-management operations.
+- Do not run concurrent Terraform operations against the same local state.
+- Keep credentials, private SSH keys, and sensitive variable files out of version control.
+
+For a future remote-state setup, configure a backend deliberately and follow the appropriate state migration procedure. Remote state is outside the current scope.
+
+## Configuration
+
+Environment-specific values are provided through Terraform variables and variable definition files.
+
+Review the configuration before running Terraform, particularly:
+
+- Resource group names and Azure regions.
+- VNet address spaces and subnet CIDRs.
+- NSG rules, priorities, directions, protocols, and port ranges.
+- VNet peering configuration.
+- Linux VM size, image, administrator username, and SSH public key.
+- Public IP SKU, allocation method, region, and optional DNS label.
+- Common tags and owner information.
+
+The current plan includes a Linux VM named `tf-linux-vm-01` in `dev1`, using the `Standard_D2s_v6` VM size and SSH key authentication.
+
+The Public IP configuration includes:
+
+- Resource group: `dev1`
+- Region: `centralindia`
+- SKU: `Standard`
+- Allocation method: `Static`
+- IP version: `IPv4`
+- DNS label: `app-gateway-dev-2026`
+
+Review these values against your subscription, naming requirements, and intended design before deployment. The DNS label is a configured value, not confirmation that the resource has been created or that its DNS name is available.
+
+The Public IP module creates a Public IP resource only; it does not automatically attach it to the VM or create an Application Gateway.
+
+## Usage
+
+Run the following commands from the `integrated-environment` directory.
+
+### 1. Initialize Terraform
+
+```bash
+terraform init
+```
+
+### 2. Format and validate the configuration
+
+```bash
+terraform fmt -check -recursive
+terraform validate
+```
+
+### 3. Review the execution plan
+
+```bash
+terraform plan
+```
+
+Review all proposed resource creations, updates, replacements, and deletions before proceeding.
+
+### 4. Deploy the environment
+
+```bash
+terraform apply
+```
+
+Run this command only when you are ready to create the Azure resources and have reviewed the plan.
+
+### 5. Clean up the environment
+
+```bash
+terraform plan -destroy
+terraform destroy
+```
+
+Review the destruction plan before confirming cleanup. Ensure that no resources or state are shared with other environments.
+
+## Security Considerations
+
+- Linux VM access uses SSH key authentication rather than password authentication.
+- Review NSG rules to ensure inbound and outbound access is limited to the intended traffic.
+- Avoid committing private SSH keys, credentials, state files, plan files, or other secrets.
+- Use least-privilege Azure permissions.
+- Review the security implications of public IP allocation before deploying.
+- Keep local Terraform state protected and backed up.
+
+## Validation Status
+
+The latest reviewed Terraform plan completed with the following proposed changes:
+
+| Action | Resource count |
+|---|---:|
+| Add | 21 |
+| Change | 0 |
+| Destroy | 0 |
+
+This confirms that Terraform produced a plan for the integrated configuration. It does **not** confirm that the resources have been deployed or that post-deployment connectivity has been tested.
+
+| Validation activity | Status |
+|---|---|
+| Terraform plan reviewed | Completed |
+| Deployment of the planned environment | Not confirmed |
+| Post-deployment connectivity testing | Pending |
+| End-to-end validation | Pending |
+
+Update this section when additional validation has actually been completed.
+
+## Scope and Limitations
+
+This environment focuses on integrating reusable Terraform modules into a single configuration within one Azure subscription.
+
+It does not currently represent a complete production Azure landing zone or a complete three-tier application architecture.
+
+The current scope also excludes:
+
+- Remote Terraform state management.
+- Application Gateway or Load Balancer integration.
+- Public IP attachment to the VM.
+- Managed identity configuration.
+- Confirmed end-to-end application connectivity.
+
+Additional services should be introduced only when required by a specific learning objective.
+
+## Learning Objectives
+
+- Compose reusable Terraform modules.
+- Manage dependencies between Azure resources.
+- Configure VNets, subnets, NSGs, and VNet peering.
+- Deploy a Linux VM using SSH authentication.
+- Integrate a reusable Public IP module.
+- Review Terraform plans before making infrastructure changes.
+- Apply consistent tagging and configuration practices.
+- Understand the implications of local Terraform state and state-file protection.

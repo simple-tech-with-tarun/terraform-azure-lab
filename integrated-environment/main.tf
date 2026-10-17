@@ -3,11 +3,11 @@ module "azurerm_resource_group" {
   rg_m = {
     for key, value in var.rg :
     key => {
-      name        = value.name
-      location    = value.location
-      mananged_by = value.managed_by
-      owner       = local.owner
-      tags        = local.common_tags
+      name       = value.name
+      location   = value.location
+      managed_by = value.managed_by
+      owner      = local.owner
+      tags       = local.common_tags
     }
   }
 }
